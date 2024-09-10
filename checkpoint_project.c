@@ -21,8 +21,6 @@ struct blocked_ip {
 
 static LIST_HEAD(blocked_ip_list);
 
-#define BLOCKED_IP "192.168.33.129"
-
 unsigned int block_ip_hook(void *priv, struct sk_buff *skb, const struct nf_hook_state *state);
 
 //
