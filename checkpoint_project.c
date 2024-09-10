@@ -11,7 +11,7 @@
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Ehsan and Paz");
-MODULE_DESCRIPTION("Checkpoint kernel project with Netfilter hook");
+MODULE_DESCRIPTION("Kernel IP Blocker Project");
 MODULE_VERSION("1.0");
 
 struct blocked_ip {
@@ -24,7 +24,7 @@ static LIST_HEAD(blocked_ip_list);
 unsigned int block_ip_hook(void *priv, struct sk_buff *skb, const struct nf_hook_state *state);
 
 //
-//  HOOK FUNCTION
+//  HOOK FUNCTIONS
 //
 
 // Netfilter hook
@@ -76,6 +76,19 @@ void add_blocked_ip(const char *ip_str) {
 
     INIT_LIST_HEAD(&new_node->list);
     list_add(&new_node->list, &blocked_ip_list);
+}
+
+void remove_blocked_ip(__be32 ip) {
+    struct blocked_ip *entry, *tmp;
+
+    list_for_each_entry_safe(entry, tmp, &blocked_ip_list, list) {
+        if (entry->ip == ip) {
+            list_del(&entry->list);
+            kfree(entry);
+            printk(KERN_INFO "Removed IP %pI4\n", &ip);
+            return;
+        }
+    }
 }
 
 void hook_init(void){
